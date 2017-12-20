@@ -32,7 +32,7 @@ public class TwitterCheckinController {
 	static AuthenticationResponseDto authenticationResponseDto;
 
 	@RequestMapping(value = "/checkin", method = RequestMethod.GET)
-	String CheckinPax(String pnr) {
+	String CheckinPax(AuthenticationResponseDto pnr) {
 		
 		new Runnable() {
 			public void run() {
