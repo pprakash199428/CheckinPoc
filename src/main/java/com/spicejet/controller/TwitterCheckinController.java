@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.apache.axis2.AxisFault;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spicejet.dto.AuthenticationResponseDto;
 import com.spicejet.dto.BookingDetailDto;
+import com.spicejet.dto.ResponseDto;
+import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.resources.BookingManagerResource;
 import com.spicejet.resources.OperationManagerResource;
 import com.spicejet.resources.SessionManagerResource;
+import com.spicejet.service.impl.BookingServiceImpl;
+import com.spicejet.service.inter.EmailService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -29,33 +34,58 @@ public class TwitterCheckinController {
 	@Autowired
 	OperationManagerResource operationManagerResources;
 
-	static AuthenticationResponseDto authenticationResponseDto;
+	@Autowired
+	EmailService emailService;
+
+	@Autowired
+	private BookingServiceImpl bookingService;
+
+	private static AuthenticationResponseDto authenticationResponseDto;
+
+	Logger log = Logger.getLogger(TwitterCheckinController.class);
 
 	@RequestMapping(value = "/checkin", method = RequestMethod.GET)
 	String CheckinPax(String pnr) {
-		
+
 		new Runnable() {
 			public void run() {
 				BookingDetailDto bookingDetailDto = null;
+				ResponseDto responseDto = null;
 				try {
 					if (authenticationResponseDto == null) {
 						authenticationResponseDto = sessionManagerResources.logon();
 					}
-					bookingDetailDto = bookingManagerResource.getBookingDetails(authenticationResponseDto.getSignature(), pnr,
-							new Date().toString());
-					operationManagerResources.checkIn(authenticationResponseDto.getSignature(), pnr, bookingDetailDto);
+					Booking booking = bookingService.getBooking(authenticationResponseDto.getSignature(), pnr);
+					bookingDetailDto = bookingManagerResource.getBookingDetails(
+							authenticationResponseDto.getSignature(), pnr, new Date().toString(), booking);
+					if (bookingDetailDto.isValidBooking()) {
+						responseDto = operationManagerResources.checkIn(authenticationResponseDto.getSignature(), pnr,
+								bookingDetailDto);
+					} else {
+						emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
+					}
+
+					if (responseDto != null && responseDto.isValidResponse()) {
+						emailService.sendEmail(booking, " ", true);
+					} else {
+						emailService.sendEmail(booking, responseDto.getErrorMessage(), false);
+					}
 
 				} catch (AxisFault e) {
-					e.printStackTrace();
+					authenticationResponseDto = null;
+					log.error("Axis Fault for PNR : ", e);
 				} catch (RemoteException e) {
-					e.printStackTrace();
+					authenticationResponseDto = null;
+					log.error("RemoteException for PNR : ", e);
 				}
 			}
 		}.run();
 		return "Success";
 	}
+
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	String TestApi(String pnr) {
 		return "OK";
 	}
+
 }
