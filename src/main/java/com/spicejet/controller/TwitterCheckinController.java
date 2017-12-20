@@ -20,6 +20,7 @@ import com.spicejet.resources.OperationManagerResource;
 import com.spicejet.resources.SessionManagerResource;
 import com.spicejet.service.impl.BookingServiceImpl;
 import com.spicejet.service.inter.EmailService;
+import com.spicejet.service.inter.MessageService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -36,6 +37,9 @@ public class TwitterCheckinController {
 
 	@Autowired
 	EmailService emailService;
+	
+	@Autowired
+	MessageService messageService;
 
 	@Autowired
 	private BookingServiceImpl bookingService;
@@ -63,12 +67,15 @@ public class TwitterCheckinController {
 								bookingDetailDto);
 					} else {
 						emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
+						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
 					}
 
 					if (responseDto != null && responseDto.isValidResponse()) {
 						emailService.sendEmail(booking, " ", true);
+						messageService.sendMessage(booking," ", true);
 					} else {
 						emailService.sendEmail(booking, responseDto.getErrorMessage(), false);
+						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
 					}
 
 				} catch (AxisFault e) {
