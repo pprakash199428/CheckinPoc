@@ -77,7 +77,7 @@ public class BookingManagerResource {
 
 	Logger log = Logger.getLogger(BookingManagerResource.class);
 	
-	public BookingDetailDto getBookingDetails(String sign,String pnr,String currentDateTime) {
+	public BookingDetailDto getBookingDetails(String sign,String pnr,String currentDateTime,Booking booking) {
 
 		log.info("Signature : " + sign);
 		log.info("PNR : " + pnr);
@@ -98,9 +98,6 @@ public class BookingManagerResource {
 		bookingDetailDto.setPassengerDetails(new ArrayList<PassengerDetail>());
 		bookingDetailDto.setJourneyDetails(new ArrayList<JourneyDetail>());
 		try {
-			Thread.sleep(10000);
-			Booking booking = bookingService.getBooking(sign, pnr);
-
 			if (booking != null && (booking.getJourneys() != null)) {
 				bookingDetailDto = businessRuleConfigurator.initBookingDetailDto(bookingDetailDto).applyRules(booking);
 				if (bookingDetailDto.isValidBooking()) {

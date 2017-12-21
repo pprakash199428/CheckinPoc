@@ -133,34 +133,6 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 
 	@Override
 	public ResponseDto checkIn(String sign, String pnr, BookingDetailDto bookingDetailDto) throws RemoteException {
-		Booking bookingDetails = bookingService.getBooking(sign, pnr);
-
-		Map<String, Integer> extractHistoryDetails = null;
-		BookingHistory[] bookingHistories = bookingHistory(sign, bookingDetails.getBookingID());
-		if (bookingHistories != null) {
-			extractHistoryDetails = extractDataFromBookingHistory(bookingHistories);
-		}
-		for (JourneyDetail journeydetail : bookingDetailDto.getJourneyDetails()) {
-			for (PassengerDetail passengerdetail : bookingDetailDto.getPassengerDetails()) {
-				String keyDetail = journeydetail.getDepartureStation() + journeydetail.getArrivalStation()
-						+ passengerdetail.getLastName().toLowerCase() + "/"
-						+ passengerdetail.getFirstName().toLowerCase();
-				if (extractHistoryDetails != null && extractHistoryDetails.containsKey(keyDetail)) {
-					if (extractHistoryDetails.get(keyDetail) >= Integer
-							.parseInt(env.getProperty(Constants.LIMIT_OF_BOARDINGPASS_PRINTED))) {
-						ResponseDto responseDto = new ResponseDto();
-						//Data responseList = new Data();
-						List<String> datum = new ArrayList<>();
-						datum.add("Test");
-						//responseList.setDatum(datum);
-						//responseDto.setResponseList(responseList);
-						responseDto.setValidResponse(true);
-						responseDto.setErrorMessage(env.getProperty(Constants.BOARDINGPASS_LIMIT_ERROR));
-						return responseDto;
-					}
-				}
-			}
-		}
 
 		OperationManagerStub operationManagerStub = new OperationManagerStub(
 				env.getProperty(Constants.OPERATION_MANAGER));
@@ -225,12 +197,34 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 			checkInPassengerRequest.setCheckInMultiplePassengersRequest(checkInPassengersRequestData);
 			CheckInPassengersResponse checkInPassengers = operationManagerStub
 					.checkInPassengers(checkInPassengerRequest, cv, signature);
-			return populateBoardingPass(checkInPassengers, pnr, sign, bookingDetailDto);
+			CheckInMultiplePassengerResponse[] checkInMultiplePassengerResponse = checkInPassengers
+					.getCheckInPassengersResponseData().getCheckInMultiplePassengerResponseList()
+					.getCheckInMultiplePassengerResponse();
+			ResponseDto responseDto = new ResponseDto();
+			responseDto.setValidResponse(true);
+			for (CheckInMultiplePassengerResponse checkInPassengerResponse : Arrays
+					.asList(checkInMultiplePassengerResponse)) {
+				for (CheckInPaxResponse checkInPaxResponse : Arrays
+						.asList(checkInPassengerResponse.getCheckInPaxResponseList().getCheckInPaxResponse())) {
+					if (checkInPaxResponse.getErrorList().getCheckInError() == null) {
+
+					} else {
+						String errorMessage = Arrays.asList(checkInPaxResponse.getErrorList().getCheckInError()).get(0)
+								.getErrorMessage();
+						responseDto.setValidResponse(false);
+						responseDto.setErrorMessage(errorMessage);
+						break;
+
+					}
+				}
+				return responseDto;
+			}
+			return responseDto;
 		}
-		ResponseDto responseDto = new ResponseDto();
-		responseDto.setValidResponse(false);
-		responseDto.setErrorMessage("All selected passenger(s) are checked in");
-		return responseDto;
+		ResponseDto responseDtoNext = new ResponseDto();
+		responseDtoNext.setValidResponse(false);
+		responseDtoNext.setErrorMessage("All selected passenger(s) are checked in");
+		return responseDtoNext;
 	}
 
 	private void updateSameDayPassengerDetail(List<PassengerDetail> passengerDetails) {
@@ -399,7 +393,6 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 	@Override
 	public ResponseDto assignSeats(String sign, String pnr, BookingDetailDto bookingDetailDto) throws RemoteException {
 
-		
 		OperationManagerStub operationManagerStub = new OperationManagerStub(
 				env.getProperty(Constants.OPERATION_MANAGER));
 		OperationManagerStub.AssignSeatsAtCheckinReqData assignSeatsAtCheckinReq = new OperationManagerStub.AssignSeatsAtCheckinReqData();
@@ -546,7 +539,6 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 
 	}
 
-	
 	private List<String> populateSsrs(OperationManagerStub.ManifestLegSSR[] manifestLegSSR) {
 		List<String> manifestSSRS = new ArrayList<>();
 		for (OperationManagerStub.ManifestLegSSR manifestLegSSR2 : Arrays.asList(manifestLegSSR)) {
@@ -744,7 +736,6 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 		}
 		return seatRowList;
 	}
-
 
 	public BookingHistory[] bookingHistory(String sign, long bookingId) throws RemoteException {
 		BookingManagerStub bookingManagerStub = new BookingManagerStub(env.getProperty(Constants.BOOKING_MANAGER));
