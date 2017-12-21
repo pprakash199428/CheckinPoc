@@ -50,4 +50,7 @@ public class Constants {
     public static final String BOARDINGPASS_LIMIT_ERROR="app.boardingpass.limit.error";
     public static final String DISABLE_WEB_CHECKIN_BAGGAGE="app.disable.web.checkin.baggage";
     public static final String APP_LOAD_Images="app.load.images";
+    public static final String FAILED="FAILED";
+    public static final String SUCCESS="SUCCESS";
+    public static final String INPROGRESS="INPROGRESS";
 }
