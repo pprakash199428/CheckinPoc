@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spicejet.dto.BookingDetailDto;
+import com.spicejet.dto.PassengerDetail;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.service.inter.MessageService;
 import com.spicejet.util.MessageRequest;
@@ -17,20 +19,26 @@ public class MessageServiceImpl implements MessageService {
 	Logger log = Logger.getLogger(EmailServiceImpl.class);
 
 	@Override
-	public void sendMessage(Booking booking, String errorMessage, boolean isSuccess) {
+	public void sendMessage(Booking booking, String errorMessage, boolean isSuccess,BookingDetailDto bookingDetailDto) {
 		RestHandler restHandler = new RestHandler();
 		HttpResponse response = null;
 		MessageRequest messageRequest = new MessageRequest();
 
 		String plainTextContent = " ";
+		String seatNumber = " ";
+		String passengerName = " ";
+		for(PassengerDetail detail:bookingDetailDto.getPassengerDetails()){
+			seatNumber = seatNumber + detail.getAssignedSeats().toString();
+			passengerName = detail.getFirstName()+" "+ detail.getLastName() + "||";
+		}
 		if (isSuccess) {
-			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul";
+			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "+passengerName+". Your Seat Number "+seatNumber;
 		} else {
 			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is Failed As "
 					+ errorMessage;
 		}
 		String[] to = new String[1];
-		to[0] = "8513866908";
+		to[0] = booking.getBookingContacts().getBookingContact()[0].getHomePhone();
 
 		restHandler.setRequestType(RestHandler.RequestType.POST);
 		log.info("URL : http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");
@@ -41,6 +49,7 @@ public class MessageServiceImpl implements MessageService {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageRequest);
+			log.info(jsonInString);
 			restHandler.setBodyContentMap(jsonInString);
 			response = restHandler.sendRequest();
 			String json = EntityUtils.toString(response.getEntity(), "UTF-8");

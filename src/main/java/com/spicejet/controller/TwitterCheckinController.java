@@ -51,38 +51,43 @@ public class TwitterCheckinController {
 	@RequestMapping(value = "/checkin", method = RequestMethod.GET)
 	String CheckinPax(String pnr) {
 		new Thread(() -> {
-				BookingDetailDto bookingDetailDto = null;
-				ResponseDto responseDto = null;
-				try {
-					if (authenticationResponseDto == null) {
-						authenticationResponseDto = sessionManagerResources.logon();
-					}
-					Booking booking = bookingService.getBooking(authenticationResponseDto.getSignature(), pnr);
-					bookingDetailDto = bookingManagerResource.getBookingDetails(
-							authenticationResponseDto.getSignature(), pnr, new Date().toString(), booking);
-					if (bookingDetailDto.isValidBooking()) {
-						responseDto = operationManagerResources.checkIn(authenticationResponseDto.getSignature(), pnr,
-								bookingDetailDto);
-					} else {
-						emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
-						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
-					}
-
-					if (responseDto != null && responseDto.isValidResponse()) {
-						emailService.sendEmail(booking, " ", true);
-						messageService.sendMessage(booking," ", true);
-					} else {
-						emailService.sendEmail(booking, responseDto.getErrorMessage(), false);
-						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false);
-					}
-
-				} catch (AxisFault e) {
-					authenticationResponseDto = null;
-					log.error("Axis Fault for PNR : ", e);
-				} catch (RemoteException e) {
-					authenticationResponseDto = null;
-					log.error("RemoteException for PNR : ", e);
+			BookingDetailDto bookingDetailDto = null;
+			ResponseDto responseDto = null;
+			try {
+				if (authenticationResponseDto == null) {
+					authenticationResponseDto = sessionManagerResources.logon();
 				}
+				Booking booking = bookingService.getBooking(authenticationResponseDto.getSignature(), pnr);
+				bookingDetailDto = bookingManagerResource.getBookingDetails(authenticationResponseDto.getSignature(),
+						pnr, new Date().toString(), booking);
+				if (bookingDetailDto.isValidBooking()) {
+					responseDto = operationManagerResources.checkIn(authenticationResponseDto.getSignature(), pnr,
+							bookingDetailDto);
+				} else {
+					emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+							bookingDetailDto);
+					messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+							bookingDetailDto);
+				}
+
+				if (responseDto != null) {
+					if (responseDto.isValidResponse()) {
+						emailService.sendEmail(booking, " ", true, bookingDetailDto);
+						messageService.sendMessage(booking, " ", true, bookingDetailDto);
+					} else {
+						emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
+						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+								bookingDetailDto);
+					}
+				}
+
+			} catch (AxisFault e) {
+				authenticationResponseDto = null;
+				log.error("Axis Fault for PNR : ", e);
+			} catch (RemoteException e) {
+				authenticationResponseDto = null;
+				log.error("RemoteException for PNR : ", e);
+			}
 		}).start();
 		return "Success";
 	}

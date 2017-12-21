@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spicejet.dto.BookingDetailDto;
+import com.spicejet.dto.PassengerDetail;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.service.inter.EmailService;
 import com.spicejet.util.EmailApiRequestBody;
@@ -22,13 +24,19 @@ public class EmailServiceImpl implements EmailService {
 	Environment env;
 
 	@Override
-	public void sendEmail(Booking booking, String errorMessage, boolean isSuccess) {
+	public void sendEmail(Booking booking, String errorMessage, boolean isSuccess,BookingDetailDto bookingDetailDto) {
 		RestHandler restHandler = new RestHandler();
 		HttpResponse response = null;
 		EmailApiRequestBody emailApiRequestBody = new EmailApiRequestBody();
 		String plainTextContent = " ";
+		String seatNumber = " ";
+		String passengerName = " ";
+		for(PassengerDetail detail:bookingDetailDto.getPassengerDetails()){
+			seatNumber = seatNumber + detail.getAssignedSeats().toString() + " ,";
+			passengerName = detail.getFirstName()+" "+ detail.getLastName() + "||";
+		}
 		if (isSuccess) {
-			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul";
+			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "+passengerName+". Your Seat Number "+seatNumber;
 		} else {
 			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is Failed As "
 					+ errorMessage;
@@ -50,6 +58,7 @@ public class EmailServiceImpl implements EmailService {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(emailApiRequestBody);
+			log.info(jsonInString);
 			restHandler.setBodyContentMap(jsonInString);
 
 			response = restHandler.sendRequest();
