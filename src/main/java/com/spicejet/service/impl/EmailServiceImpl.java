@@ -24,19 +24,24 @@ public class EmailServiceImpl implements EmailService {
 	Environment env;
 
 	@Override
-	public void sendEmail(Booking booking, String errorMessage, boolean isSuccess,BookingDetailDto bookingDetailDto) {
+	public void sendEmail(Booking booking, String errorMessage, boolean isSuccess, BookingDetailDto bookingDetailDto) {
 		RestHandler restHandler = new RestHandler();
 		HttpResponse response = null;
 		EmailApiRequestBody emailApiRequestBody = new EmailApiRequestBody();
 		String plainTextContent = " ";
 		String seatNumber = " ";
 		String passengerName = " ";
-		for(PassengerDetail detail:bookingDetailDto.getPassengerDetails()){
-			seatNumber = seatNumber + detail.getAssignedSeats().toString() + " ,";
-			passengerName = detail.getFirstName()+" "+ detail.getLastName() + "||";
+		for (PassengerDetail detail : bookingDetailDto.getPassengerDetails()) {
+			for (String seat : detail.getAssignedSeats()) {
+				seatNumber = seatNumber + seat + " ";
+			}
+			seatNumber = seatNumber + "||";
+			passengerName = passengerName + detail.getTitle() + " " + detail.getFirstName() + " " + detail.getLastName()
+					+ "||";
 		}
 		if (isSuccess) {
-			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "+passengerName+". Your Seat Number "+seatNumber;
+			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "
+					+ passengerName + ". Your Seat Number " + seatNumber;
 		} else {
 			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is Failed As "
 					+ errorMessage;

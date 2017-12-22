@@ -19,7 +19,8 @@ public class MessageServiceImpl implements MessageService {
 	Logger log = Logger.getLogger(EmailServiceImpl.class);
 
 	@Override
-	public void sendMessage(Booking booking, String errorMessage, boolean isSuccess,BookingDetailDto bookingDetailDto) {
+	public void sendMessage(Booking booking, String errorMessage, boolean isSuccess,
+			BookingDetailDto bookingDetailDto) {
 		RestHandler restHandler = new RestHandler();
 		HttpResponse response = null;
 		MessageRequest messageRequest = new MessageRequest();
@@ -27,12 +28,17 @@ public class MessageServiceImpl implements MessageService {
 		String plainTextContent = " ";
 		String seatNumber = " ";
 		String passengerName = " ";
-		for(PassengerDetail detail:bookingDetailDto.getPassengerDetails()){
-			seatNumber = seatNumber + detail.getAssignedSeats().toString();
-			passengerName = detail.getFirstName()+" "+ detail.getLastName() + "||";
+		for (PassengerDetail detail : bookingDetailDto.getPassengerDetails()) {
+			for (String seat : detail.getAssignedSeats()) {
+				seatNumber = seatNumber + seat + " ";
+			}
+			seatNumber = seatNumber + "||";
+			passengerName = passengerName + detail.getTitle() + " " + detail.getFirstName() + " " + detail.getLastName()
+					+ "||";
 		}
 		if (isSuccess) {
-			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "+passengerName+". Your Seat Number "+seatNumber;
+			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is SuccessFul For "
+					+ passengerName + ". Your Seat Number " + seatNumber;
 		} else {
 			plainTextContent = "Your CheckIn Request For PNR " + booking.getRecordLocator() + " Is Failed As "
 					+ errorMessage;
@@ -42,8 +48,7 @@ public class MessageServiceImpl implements MessageService {
 
 		restHandler.setRequestType(RestHandler.RequestType.POST);
 		log.info("URL : http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");
-		restHandler
-				.setUrl("http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");
+		restHandler.setUrl("http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");
 		messageRequest.setMessageText(plainTextContent);
 		messageRequest.setReceiver(to);
 		ObjectMapper mapper = new ObjectMapper();
