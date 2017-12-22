@@ -92,4 +92,12 @@ public class Status {
 		this.modifiedDate = modifiedDate;
 	}
 
+	@Override
+	public String toString() {
+		return "Status [id=" + id + ", pnr=" + pnr + ", userid=" + userid + ", status=" + status + ", createdDate="
+				+ createdDate + ", modifiedDate=" + modifiedDate + ", reason=" + reason + "]";
+	}
+	
+	
+
 }

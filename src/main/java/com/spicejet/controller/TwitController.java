@@ -25,7 +25,7 @@ public class TwitController {
 		status.setModifiedDate(currentdate);
 		status.setStatus(Constants.INPROGRESS);
 		pd.savePnrStatus(status);
-		pd.saveReason(status);
+		//pd.saveReason(status);
 
 	}
 

@@ -14,15 +14,26 @@ public class PnrStatusDaoImpl implements PnrStatusDao {
 
 	@Autowired
 	SessionFactory sessionfactory;
+
 	@Override
 	public void savePnrStatus(Status status) {
 		sessionfactory.getCurrentSession().save(status);
-		
+
 	}
+
 	@Override
-	public void saveReason(Status status) {
-		sessionfactory.getCurrentSession().save(status);
-		
+	public void updatePnrStatus(Status status) {
+		sessionfactory.getCurrentSession().update(status);
+
+	}
+
+	@Override
+	public Status fetchPnrStatus(String pnr, String statusText) {
+
+		return (Status) sessionfactory.getCurrentSession()
+				.createQuery(" from Status where createdDate=modifiedDate and status = :statusText and pnr=:pnr")
+				.setParameter("statusText", statusText).setParameter("pnr", pnr).list().get(0);
+
 	}
 
 }
