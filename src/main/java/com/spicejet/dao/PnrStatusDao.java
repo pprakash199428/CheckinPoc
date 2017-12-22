@@ -5,6 +5,7 @@ import com.spicejet.dto.Status;
 public interface PnrStatusDao {
 	
 	void savePnrStatus(Status status);
+	void saveReason(Status status);
 	
 
 }
