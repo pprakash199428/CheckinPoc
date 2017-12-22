@@ -19,5 +19,10 @@ public class PnrStatusDaoImpl implements PnrStatusDao {
 		sessionfactory.getCurrentSession().save(status);
 		
 	}
+	@Override
+	public void saveReason(Status status) {
+		sessionfactory.getCurrentSession().save(status);
+		
+	}
 
 }

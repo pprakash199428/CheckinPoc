@@ -1,5 +1,7 @@
 CREATE database spicejetcheckin;
-USE DATABASE spicejetcheckin;
+
+use spicejetcheckin;
+
 CREATE TABLE `twitter_pnr` (
 `id` int(11) NOT NULL AUTO_INCREMENT,  
 `pnr` varchar(6) NOT NULL,
@@ -7,5 +9,6 @@ CREATE TABLE `twitter_pnr` (
   `status` varchar(45) DEFAULT NULL,
   `created_date` datetime DEFAULT NULL,
   `modified_date` datetime DEFAULT NULL,
+  `reason` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
