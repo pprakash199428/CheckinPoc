@@ -1,5 +1,6 @@
 package com.spicejet.controller;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.DocumentException;
 import com.spicejet.dao.PnrStatusDao;
 import com.spicejet.dto.AuthenticationResponseDto;
 import com.spicejet.dto.BookingDetailDto;
@@ -22,9 +24,12 @@ import com.spicejet.resources.OperationManagerResource;
 import com.spicejet.resources.SessionManagerResource;
 import com.spicejet.service.impl.BookingServiceImpl;
 import com.spicejet.service.inter.EmailService;
+import com.spicejet.service.inter.JasperGeneratorService;
 import com.spicejet.service.inter.MessageService;
 import com.spicejet.service.inter.PnrStatusService;
 import com.spicejet.util.Constants;
+
+import net.sf.jasperreports.engine.JRException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -50,6 +55,9 @@ public class TwitterCheckinController {
 	
 	@Autowired
 	PnrStatusService pnrStatusService;
+	
+	@Autowired
+	JasperGeneratorService jasperGeneratorService;
 
 	
 
@@ -60,7 +68,7 @@ public class TwitterCheckinController {
 	@RequestMapping(value = "/checkin", method = RequestMethod.GET)
 	String CheckinPax(String pnr) {
 		new Thread(() -> {
-			pnrStatusService.savePnrStatus(pnr);
+			//pnrStatusService.savePnrStatus(pnr);
 			BookingDetailDto bookingDetailDto = null;
 			ResponseDto responseDto = null;
 			try {
@@ -74,23 +82,24 @@ public class TwitterCheckinController {
 					responseDto = operationManagerResources.checkIn(authenticationResponseDto.getSignature(), pnr,
 							bookingDetailDto);
 				} else {
-					pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, bookingDetailDto.getCheckInNotAllowedReason());
-					emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-							bookingDetailDto);
-					messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-							bookingDetailDto);
+					//pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, bookingDetailDto.getCheckInNotAllowedReason());
+					//emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+							//bookingDetailDto);
+					//messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+						//	bookingDetailDto);
 				}
 
 				if (responseDto != null) {
 					if (responseDto.isValidResponse()) {
-						pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS,"Success");
-						emailService.sendEmail(booking, " ", true, bookingDetailDto);
-						messageService.sendMessage(booking, " ", true, bookingDetailDto);
+						jasperGeneratorService.replaceAndCreatePdf(responseDto.getBoardingPassList());
+						//pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS,"Success");
+						//emailService.sendEmail(booking, " ", true, bookingDetailDto);
+						//messageService.sendMessage(booking, " ", true, bookingDetailDto);
 					} else {
-						pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage());
-						emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
-						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-								bookingDetailDto);
+						//pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage());
+						//emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
+						//messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+								//bookingDetailDto);
 					}
 				}
 
@@ -100,14 +109,18 @@ public class TwitterCheckinController {
 			} catch (RemoteException e) {
 				authenticationResponseDto = null;
 				log.error("RemoteException for PNR : ", e);
+			} catch (JRException e) {
+				authenticationResponseDto = null;
+				log.error("JRException for PNR : ", e);
+			} catch (IOException e) {
+				authenticationResponseDto = null;
+				log.error("IOException for PNR : ", e);
+			} catch (DocumentException e) {
+				authenticationResponseDto = null;
+				log.error("DocumentException for PNR : ", e);
 			}
 		}).start();
 		return "Success";
-	}
-
-	private void savePnrCheckinRequest(String pnr) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET)

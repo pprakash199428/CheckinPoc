@@ -1,21 +1,27 @@
 package com.spicejet.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "ResponseDto")
+
 public class ResponseDto {
 
-	@XmlElement(name = "IsValidResponse")
 	boolean isValidResponse;
 
-	@XmlElement(name = "ErrorMessage")
 	String errorMessage;
 	
+	List<BoardingPass> boardingPassList;
 	
+	
+	
+	
+	public List<BoardingPass> getBoardingPassList() {
+		return boardingPassList;
+	}
+
+	public void setBoardingPassList(List<BoardingPass> boardingPassList) {
+		this.boardingPassList = boardingPassList;
+	}
+
 	public boolean isValidResponse() {
 		return isValidResponse;
 	}

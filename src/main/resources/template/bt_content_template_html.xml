@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content header="" delimiter=":" endChar="" methodName="">
+    <field position="" label="true" methodName="">flightNumber</field>
+    <field position="" label="false" methodName="getDisplayTaggedToFlightNumber">_flightNumber</field>
+    <field position="" label="true" methodName="">arrivalStation</field>
+    <field position="" label="false" methodName="getTaggedToStation">_arrivalStation</field>
+    <field position="" label="true" methodName="">seqNumber</field>
+    <field position="" label="false" methodName="getSequenceNumber">_seqNumber</field>
+    <field position="" label="true" methodName="">displayOSTag</field>
+    <field position="" label="false" methodName="getDisplayOSTag">_displayOSTag</field>
+    <field position="" label="true" methodName="">dateOfFlight</field>
+    <field position="" label="false" methodName="getDepartureDisplayDate">_dateOfFlight</field>
+    <field position="" label="true" methodName="">recordLocator</field>
+    <field position="" label="false" methodName="getFullName">_recordLocator</field>
+    <field position="" label="true" methodName="">fullName</field>
+    <field position="" label="false" methodName="getFullName">_fullName</field>
+    <field position="" label="true" methodName="">OSTAG</field>
+    <field position="" label="false" methodName="getOSTag">_OSTAG</field>
+    <field position="" label="true" methodName="">barcodeString</field>
+    <field position="" label="false" methodName="getOSTag">_OSTAG</field>
+</content>

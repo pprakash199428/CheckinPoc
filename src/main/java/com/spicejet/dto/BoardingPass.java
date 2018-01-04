@@ -1,10 +1,10 @@
 package com.spicejet.dto;
 
-import com.spicejet.util.Constants; 
-import com.spicejet.util.DateUtil;
-
 import java.util.Calendar;
 import java.util.List;
+
+import com.spicejet.util.Constants;
+import com.spicejet.util.DateUtil;
 
 public class BoardingPass {
 
@@ -28,11 +28,11 @@ public class BoardingPass {
 
     String gate;
 
-    String departureDateTime;
+    Calendar departureDateTime;
 
-    String arrivalDateTime;	
+    Calendar arrivalDateTime;
 
-    String boardingDateTime;
+    Calendar boardingDateTime;
 
     String sequenceNumber;
 
@@ -43,7 +43,7 @@ public class BoardingPass {
     List<String> ssrs;
 
     public String getFirstName() {
-        return firstName;
+        return firstName.toUpperCase();
     }
 
     public void setFirstName(String firstName) {
@@ -51,7 +51,7 @@ public class BoardingPass {
     }
 
     public String getLastName() {
-        return lastName;
+        return lastName.toUpperCase();
     }
 
     public void setLastName(String lastName) {
@@ -59,7 +59,7 @@ public class BoardingPass {
     }
 
     public String getDepartureStation() {
-        return departureStation;
+        return departureStation.toUpperCase();
     }
 
     public void setDepartureStation(String departureStation) {
@@ -67,7 +67,7 @@ public class BoardingPass {
     }
 
     public String getArrivalStation() {
-        return arrivalStation;
+        return arrivalStation.toUpperCase();
     }
 
     public void setArrivalStation(String arrivalStation) {
@@ -75,7 +75,7 @@ public class BoardingPass {
     }
 
     public String getDepartureStationAbbr() {
-        return departureStationAbbr;
+        return departureStationAbbr.toUpperCase();
     }
 
     public void setDepartureStationAbbr(String departureStationAbbr) {
@@ -83,7 +83,7 @@ public class BoardingPass {
     }
 
     public String getArrivalStationAbbr() {
-        return arrivalStationAbbr;
+        return arrivalStationAbbr.toUpperCase();
     }
 
     public void setArrivalStationAbbr(String arrivalStationAbbr) {
@@ -91,7 +91,7 @@ public class BoardingPass {
     }
 
     public String getUnitDesignator() {
-        return unitDesignator;
+        return unitDesignator.toUpperCase();
     }
 
     public void setUnitDesignator(String unitDesignator) {
@@ -99,7 +99,7 @@ public class BoardingPass {
     }
 
     public String getFlightNumber() {
-        return flightNumber;
+        return flightNumber.toUpperCase();
     }
 
     public void setFlightNumber(String flightNumber) {
@@ -122,48 +122,48 @@ public class BoardingPass {
         this.gate = gate;
     }
 
-    public String getDepartureDateTime() {
+    public Calendar getDepartureDateTime() {
         return departureDateTime;
     }
 
     public String getDepartureDisplayDateTime() {
-        return departureDateTime;
+        return DateUtil.formatTimeForBoardingPass(this.getDepartureDateTime());
     }
 
     public String getDepartureDisplayDate() {
-        return departureDateTime;
+        return DateUtil.formatDateForBoardingPass(this.getDepartureDateTime());
     }
 
-    public void setDepartureDateTime(String departureDateTime) {
+    public void setDepartureDateTime(Calendar departureDateTime) {
         this.departureDateTime = departureDateTime;
     }
 
-    public String getArrivalDateTime() {
+    public Calendar getArrivalDateTime() {
         return arrivalDateTime;
     }
 
     public String getArrivalDisplayDateTime() {
-        return arrivalDateTime;
+        return DateUtil.formatTimeForBoardingPass(this.getArrivalDateTime());
     }
 
-    public void setArrivalDateTime(String arrivalDateTime) {
+    public void setArrivalDateTime(Calendar arrivalDateTime) {
         this.arrivalDateTime = arrivalDateTime;
     }
 
-    public String getBoardingDateTime() {
+    public Calendar getBoardingDateTime() {
         return boardingDateTime;
     }
 
     public String getBoardingDisplayDateTime() {
-        return boardingDateTime;
+        return DateUtil.formatTimeForBoardingPass(this.getBoardingDateTime());
     }
 
-    public void setBoardingDateTime(String boardingDateTime) {
+    public void setBoardingDateTime(Calendar boardingDateTime) {
         this.boardingDateTime = boardingDateTime;
     }
 
     public String getSequenceNumber() {
-        return sequenceNumber;
+        return sequenceNumber.toUpperCase();
     }
 
     public void setSequenceNumber(String sequenceNumber) {
@@ -171,7 +171,7 @@ public class BoardingPass {
     }
 
     public String getRecordLocator() {
-        return recordLocator;
+        return recordLocator.toUpperCase();
     }
 
     public void setRecordLocator(String recordLocator) {
@@ -194,7 +194,11 @@ public class BoardingPass {
         this.barcodedString = barcodedString;
     }
 
-    public String getSsrs(){
+    public List<String> getSsrs() {
+        return ssrs;
+    }
+
+    public String getSSRs(){
         StringBuffer ssrsBuffer = new StringBuffer();
         for(String ssr : this.ssrs){
             ssrsBuffer.append("(").append(ssr).append(")").append(" ");

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="baggage-checkin">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="journey"/>
+      </xs:sequence>
+      <xs:attribute name="recordLocator" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="journey">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="passengers"/>
+      </xs:sequence>
+      <xs:attribute name="arrivalStation" use="required" type="xs:string"/>
+      <xs:attribute name="carrierCode" use="required" type="xs:string"/>
+      <xs:attribute name="departureDate" use="required" type="xs:string"/>
+      <xs:attribute name="departureStation" use="required" type="xs:string"/>
+      <xs:attribute name="flightNumber" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="passengers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="passenger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="passenger">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="baggageCount"/>
+        <xs:element ref="sequenceNumber"/>
+      </xs:sequence>
+      <xs:attribute name="firstName" use="required" type="xs:string"/>
+      <xs:attribute name="lastName" use="required" type="xs:string"/>
+      <xs:attribute name="middleName" use="required" type="xs:string"/>
+      <xs:attribute name="suffix" use="required" type="xs:string"/>
+      <xs:attribute name="title" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="baggageCount" type="xs:integer"/>
+  <xs:element name="sequenceNumber" type="xs:NCName"/>
+</xs:schema>

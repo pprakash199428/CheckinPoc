@@ -1,6 +1,6 @@
 package com.spicejet.dto;
 
-public class PassSetup {
+public class BoardingPassDataBean {
 	
 	String passengerName;
 	String flight;

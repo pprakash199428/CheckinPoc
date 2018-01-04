@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content header="M" delimiter="" endChar="" methodName="">
+    <field position="" label="false" methodName="getNoOfLegsEncoded">_no_of_legs</field>
+    <field position="" label="false" methodName="getFullName">_fullName</field>
+    <field position="" label="true" methodName=""> </field>
+    <field position="" label="false" methodName="getRecordLocator">_recordLocator</field>
+    <field position="" label="false" methodName="getDepartureStationAbbr">_departStation</field>
+    <field position="" label="false" methodName="getArrivalStationAbbr">_arrival</field>
+    <field position="" label="false" methodName="getCarrierCode">_carrierCode</field>
+    <field position="" label="false" methodName="getFlightNumber">_flightNumber</field>
+    <field position="" label="false" methodName="getDateOfFlight">_julian_date_of_flight</field>
+    <field position="" label="true" methodName=" "> </field>
+    <field position="" label="false" methodName="getUnitDesignator">_seatNumber</field>
+    <field position="" label="false" methodName="getSequenceNumber">_seqNumber</field>
+    <field position="" label="true" methodName=""> </field>
+    <field position="" label="true" methodName="">100</field>
+</content>

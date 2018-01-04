@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<baggage-checkin recordLocator="loremIpsum">
+    <journey flightNumber="loremIpsum" arrivalStation="loremIpsum" departureStation="loremIpsum" carrierCode="loremIpsum" departureDate="loremIpsum">
+        <passengers>
+            <passenger title = "loremIpsum" firstName="loremIpsum" middleName="loremIpsum" lastName="loremIpsum" suffix="loremIpsum">
+                <baggageCount>1</baggageCount>
+                <sequenceNumber>SG1</sequenceNumber>
+            </passenger>
+            <passenger title = "loremIpsum" firstName="loremIpsum" middleName="loremIpsum" lastName="loremIpsum" suffix="loremIpsum">
+                <baggageCount>1</baggageCount>
+                <sequenceNumber>SG2</sequenceNumber>
+            </passenger>
+        </passengers>
+    </journey>
+    <journey flightNumber="loremIpsum" arrivalStation="loremIpsum" departureStation="loremIpsum" carrierCode="loremIpsum" departureDate="loremIpsum">
+        <passengers>
+            <passenger title = "loremIpsum" firstName="loremIpsum" middleName="loremIpsum" lastName="loremIpsum" suffix="loremIpsum">
+                <baggageCount>1</baggageCount>
+                <sequenceNumber>SG3</sequenceNumber>
+            </passenger>
+            <passenger title = "loremIpsum" firstName="loremIpsum" middleName="loremIpsum" lastName="loremIpsum" suffix="loremIpsum">
+                <baggageCount>1</baggageCount>
+                <sequenceNumber>SG4</sequenceNumber>
+            </passenger>
+        </passengers>
+    </journey>
+</baggage-checkin>

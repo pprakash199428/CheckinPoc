@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content header="" delimiter=":" endChar="" methodName="">
+    <field position="" label="true" methodName="">passengerName</field>
+    <field position="" label="false" methodName="getFullName">_fullName</field>
+    <field position="" label="true" methodName="">flightDate</field>
+    <field position="" label="false" methodName="getDepartureDisplayDate">_getDepartureDisplayDate</field>
+    <field position="" label="true" methodName="">recordLocator</field>
+    <field position="" label="false" methodName="getRecordLocator">_getRecordLocator</field>
+    <field position="" label="true" methodName="">from</field>
+    <field position="" label="false" methodName="getDepartureStation">_getDepartureStation</field>
+    <field position="" label="true" methodName="">departTime</field>
+    <field position="" label="false" methodName="getDepartureDisplayDateTime"> </field>
+    <field position="" label="true" methodName="">arriveTime</field>
+    <field position="" label="false" methodName="getArrivalDisplayDateTime">_getArrivalDisplayDateTime</field>
+    <field position="" label="true" methodName="">to</field>
+    <field position="" label="false" methodName="getArrivalStation">_getArrivalStation</field>
+    <field position="" label="true" methodName="">ssrs</field>
+    <field position="" label="false" methodName="getSSRs">_getSSRs</field>
+    <field position="" label="true" methodName="">seqNumber</field>
+    <field position="" label="false" methodName="getSequenceNumber">_getSequenceNumber</field>
+    <field position="" label="true" methodName="">seatNumber</field>
+    <field position="" label="false" methodName="getUnitDesignator">_getUnitDesignator</field>
+    <field position="" label="true" methodName="">flightNumber</field>
+    <field position="" label="false" methodName="getDisplayFlightNumber">_getFlightNumber</field>
+    <field position="" label="true" methodName="">boardingTime</field>
+    <field position="" label="false" methodName="getBoardingDisplayDateTime">_getBoardingDisplayDateTime</field>
+    <field position="" label="true" methodName="">gateNumber</field>
+    <field position="" label="false" methodName="getGate">_getGate</field>
+    <field position="" label="true" methodName="">fromTo</field>
+    <field position="" label="false" methodName="getFromTo">_getFromTo</field>
+    <field position="" label="true" methodName="">barcodeString</field>
+    <field position="" label="false" methodName="getBarcodedString">_getBarcodedString</field>
+</content>

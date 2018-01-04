@@ -1,4 +1,4 @@
-package com.spicejet.controller;
+package com.spicejet.util;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

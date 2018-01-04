@@ -1,46 +1,36 @@
 package com.spicejet.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.spicejet.dto.BoardingPass;
 import com.spicejet.dto.BookingDetailDto;
+import com.spicejet.dto.ContentDataBuilder;
+import com.spicejet.dto.IATABoardingPassBarcode;
 import com.spicejet.dto.JourneyDetail;
 import com.spicejet.dto.PassengerDetail;
 import com.spicejet.dto.ResponseDto;
 import com.spicejet.dto.SeatAvailabilityResponseDto;
 import com.spicejet.dto.SeatColumn;
 import com.spicejet.dto.SeatRow;
+import com.spicejet.enums.Template;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.ArrayOfBookingHistory;
-import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.BookingHistory;
 import com.spicejet.kiosk.webservices.operationManager.OperationManagerStub;
 import com.spicejet.kiosk.webservices.operationManager.OperationManagerStub.ArrayOfBarCodedBoardingPass;
@@ -97,6 +87,9 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 	private IBookingManagerService bookingService;
 
 	Logger log = Logger.getLogger(OperationManagerServiceImpl.class);
+
+	@Autowired
+	ContentDataBuilder contentDataBuilder;
 
 	@Override
 	public SeatAvailabilityResponseDto fetchSeatDetails(String sign, String std, String dStation, String aStation,
@@ -197,29 +190,7 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 			checkInPassengerRequest.setCheckInMultiplePassengersRequest(checkInPassengersRequestData);
 			CheckInPassengersResponse checkInPassengers = operationManagerStub
 					.checkInPassengers(checkInPassengerRequest, cv, signature);
-			CheckInMultiplePassengerResponse[] checkInMultiplePassengerResponse = checkInPassengers
-					.getCheckInPassengersResponseData().getCheckInMultiplePassengerResponseList()
-					.getCheckInMultiplePassengerResponse();
-			ResponseDto responseDto = new ResponseDto();
-			responseDto.setValidResponse(true);
-			for (CheckInMultiplePassengerResponse checkInPassengerResponse : Arrays
-					.asList(checkInMultiplePassengerResponse)) {
-				for (CheckInPaxResponse checkInPaxResponse : Arrays
-						.asList(checkInPassengerResponse.getCheckInPaxResponseList().getCheckInPaxResponse())) {
-					if (checkInPaxResponse.getErrorList().getCheckInError() == null) {
-
-					} else {
-						String errorMessage = Arrays.asList(checkInPaxResponse.getErrorList().getCheckInError()).get(0)
-								.getErrorMessage();
-						responseDto.setValidResponse(false);
-						responseDto.setErrorMessage(errorMessage);
-						break;
-
-					}
-				}
-				return responseDto;
-			}
-			return responseDto;
+			return populateBoardingPass(checkInPassengers, pnr, sign,bookingDetailDto);
 		}
 		ResponseDto responseDtoNext = new ResponseDto();
 		responseDtoNext.setValidResponse(false);
@@ -471,74 +442,6 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 
 	}
 
-	private ResponseDto populateBoardingPass(CheckInPassengersResponse checkInPassengers, String pnr, String sign,
-			BookingDetailDto bookingDetailDto) throws RemoteException {
-		OperationManagerStub operationManagerStub = new OperationManagerStub(
-				env.getProperty(Constants.OPERATION_MANAGER));
-		OperationManagerStub.GetBarCodedBoardingPassesMultipleRequest barCodedBoardingPassesMultipleRequest = new OperationManagerStub.GetBarCodedBoardingPassesMultipleRequest();
-		GetBarCodedBoardingPassesMultipleRequestData getBarCodedBoardingPassesMultipleRequestData = new GetBarCodedBoardingPassesMultipleRequestData();
-		ArrayOfBoardingPassRequest boardingPassRequestList = new ArrayOfBoardingPassRequest();
-		CheckInMultiplePassengerResponse[] checkInMultiplePassengerResponse = checkInPassengers
-				.getCheckInPassengersResponseData().getCheckInMultiplePassengerResponseList()
-				.getCheckInMultiplePassengerResponse();
-		ResponseDto responseDto = new ResponseDto();
-		responseDto.setValidResponse(true);
-		for (CheckInMultiplePassengerResponse checkInPassengerResponse : Arrays
-				.asList(checkInMultiplePassengerResponse)) {
-			for (CheckInPaxResponse checkInPaxResponse : Arrays
-					.asList(checkInPassengerResponse.getCheckInPaxResponseList().getCheckInPaxResponse())) {
-				if (checkInPaxResponse.getErrorList().getCheckInError() == null) {
-					BoardingPassRequest boardingPassRequest = new BoardingPassRequest();
-					boardingPassRequest.setActiveOnly(false);
-					boardingPassRequest.setGetTotalCount(false);
-					boardingPassRequest.setBarCodeType(BarCodeType.S2D);
-					boardingPassRequest.setLastID(0);
-					boardingPassRequest.setPageSize((short) 0);
-					boardingPassRequest.setRecordLocator(pnr);
-					boardingPassRequest.setName(checkInPaxResponse.getName());
-					for (JourneyDetail journeyDetail : bookingDetailDto.getJourneyDetails()) {
-						if (journeyDetail.getDepartureStation().equalsIgnoreCase(
-								checkInPassengerResponse.getInventoryLegKey().getDepartureStation())) {
-							if (journeyDetail.isVia()) {
-								checkInPassengerResponse.getInventoryLegKey()
-										.setArrivalStation(journeyDetail.getViaStation());
-							}
-						}
-					}
-					boardingPassRequest.setInventoryLegKey(checkInPassengerResponse.getInventoryLegKey());
-					boardingPassRequest.setBySegment(true);
-					boardingPassRequest.setPrintSameDayReturn(false);
-					boardingPassRequest.setInitial(false);
-					boardingPassRequest.setCurrentTime(Calendar.getInstance());
-					boardingPassRequest.setInventoryLegKeyDepartureDateTime(Calendar.getInstance());
-					boardingPassRequestList.addBoardingPassRequest(boardingPassRequest);
-				} else {
-					String errorMessage = Arrays.asList(checkInPaxResponse.getErrorList().getCheckInError()).get(0)
-							.getErrorMessage();
-					responseDto.setValidResponse(false);
-					responseDto.setErrorMessage(errorMessage);
-					break;
-
-				}
-			}
-
-		}
-		if (responseDto.isValidResponse()) {
-			getBarCodedBoardingPassesMultipleRequestData.setBoardingPassRequestList(boardingPassRequestList);
-			barCodedBoardingPassesMultipleRequest
-					.setGetBarCodedBoardingPassesMultipleRequestData(getBarCodedBoardingPassesMultipleRequestData);
-			Signature signature = new Signature();
-			signature.setSignature(sign);
-			ContractVersion cv = new ContractVersion();
-			cv.setContractVersion(Constants.CONTRACT_VERSION);
-			GetBarCodedBoardingPassesMultipleResponse barCodedBoardingPassesMultipleResponse = operationManagerStub
-					.getBarCodedBoardingPassesMultiple(barCodedBoardingPassesMultipleRequest, cv, signature);
-			return null;
-		}
-		return responseDto;
-
-	}
-
 	private List<String> populateSsrs(OperationManagerStub.ManifestLegSSR[] manifestLegSSR) {
 		List<String> manifestSSRS = new ArrayList<>();
 		for (OperationManagerStub.ManifestLegSSR manifestLegSSR2 : Arrays.asList(manifestLegSSR)) {
@@ -760,5 +663,138 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 		} else {
 			return arrayOfBookingHistory.getBookingHistory();
 		}
+	}
+
+	private ResponseDto populateBoardingPass(CheckInPassengersResponse checkInPassengers, String pnr, String sign,
+			BookingDetailDto bookingDetailDto) throws RemoteException {
+		OperationManagerStub operationManagerStub = new OperationManagerStub(
+				env.getProperty(Constants.OPERATION_MANAGER));
+		OperationManagerStub.GetBarCodedBoardingPassesMultipleRequest barCodedBoardingPassesMultipleRequest = new OperationManagerStub.GetBarCodedBoardingPassesMultipleRequest();
+		GetBarCodedBoardingPassesMultipleRequestData getBarCodedBoardingPassesMultipleRequestData = new GetBarCodedBoardingPassesMultipleRequestData();
+		ArrayOfBoardingPassRequest boardingPassRequestList = new ArrayOfBoardingPassRequest();
+		CheckInMultiplePassengerResponse[] checkInMultiplePassengerResponse = checkInPassengers
+				.getCheckInPassengersResponseData().getCheckInMultiplePassengerResponseList()
+				.getCheckInMultiplePassengerResponse();
+		ResponseDto responseDto = new ResponseDto();
+		responseDto.setValidResponse(true);
+		for (CheckInMultiplePassengerResponse checkInPassengerResponse : Arrays
+				.asList(checkInMultiplePassengerResponse)) {
+			for (CheckInPaxResponse checkInPaxResponse : Arrays
+					.asList(checkInPassengerResponse.getCheckInPaxResponseList().getCheckInPaxResponse())) {
+				if (checkInPaxResponse.getErrorList().getCheckInError() == null) {
+					BoardingPassRequest boardingPassRequest = new BoardingPassRequest();
+					boardingPassRequest.setActiveOnly(false);
+					boardingPassRequest.setGetTotalCount(false);
+					boardingPassRequest.setBarCodeType(BarCodeType.S2D);
+					boardingPassRequest.setLastID(0);
+					boardingPassRequest.setPageSize((short) 0);
+					boardingPassRequest.setRecordLocator(pnr);
+					boardingPassRequest.setName(checkInPaxResponse.getName());
+					for (JourneyDetail journeyDetail : bookingDetailDto.getJourneyDetails()) {
+						if (journeyDetail.getDepartureStation().equalsIgnoreCase(
+								checkInPassengerResponse.getInventoryLegKey().getDepartureStation())) {
+							if (journeyDetail.isVia()) {
+								checkInPassengerResponse.getInventoryLegKey()
+										.setArrivalStation(journeyDetail.getViaStation());
+							}
+						}
+					}
+					boardingPassRequest.setInventoryLegKey(checkInPassengerResponse.getInventoryLegKey());
+					boardingPassRequest.setBySegment(true);
+					boardingPassRequest.setPrintSameDayReturn(false);
+					boardingPassRequest.setInitial(false);
+					boardingPassRequest.setCurrentTime(Calendar.getInstance());
+					boardingPassRequest.setInventoryLegKeyDepartureDateTime(Calendar.getInstance());
+					boardingPassRequestList.addBoardingPassRequest(boardingPassRequest);
+				} else {
+					String errorMessage = Arrays.asList(checkInPaxResponse.getErrorList().getCheckInError()).get(0)
+							.getErrorMessage();
+					responseDto.setValidResponse(false);
+					responseDto.setErrorMessage(errorMessage);
+					break;
+
+				}
+			}
+
+		}
+		if (responseDto.isValidResponse()) {
+			getBarCodedBoardingPassesMultipleRequestData.setBoardingPassRequestList(boardingPassRequestList);
+			barCodedBoardingPassesMultipleRequest
+					.setGetBarCodedBoardingPassesMultipleRequestData(getBarCodedBoardingPassesMultipleRequestData);
+			Signature signature = new Signature();
+			signature.setSignature(sign);
+			ContractVersion cv = new ContractVersion();
+			cv.setContractVersion(Constants.CONTRACT_VERSION);
+			GetBarCodedBoardingPassesMultipleResponse barCodedBoardingPassesMultipleResponse = operationManagerStub
+					.getBarCodedBoardingPassesMultiple(barCodedBoardingPassesMultipleRequest, cv, signature);
+			return populateBoardingPassDetail(barCodedBoardingPassesMultipleResponse);
+		}
+		return responseDto;
+
+	}
+
+	private ResponseDto populateBoardingPassDetail(
+			GetBarCodedBoardingPassesMultipleResponse barCodedBoardingPassesMultipleResponse) {
+
+		String stringCorbaSupported = env.getProperty(Constants.CORBA_SUPPORTED);
+		boolean isCORBASupported = stringCorbaSupported != null ? Boolean.valueOf(stringCorbaSupported) : true;
+
+		List<BoardingPass> boardingPasses = new ArrayList<>();
+		GetBarCodedBoardingPassesMultipleResponseData getBarCodedBoardingPassesMultipleResponseData = barCodedBoardingPassesMultipleResponse
+				.getGetBarCodedBoardingPassesMultipleResponseData();
+		ArrayOfBarCodedBoardingPass boardingPassRequestList = getBarCodedBoardingPassesMultipleResponseData
+				.getBoardingPassRequestList();
+
+		for (BarCodedBoardingPass barCodedBoardingPass : Arrays
+				.asList(boardingPassRequestList.getBarCodedBoardingPass())) {
+
+			for (BarCodedBoardingPassSegment barCodedBoardingPassSegment : Arrays
+					.asList(barCodedBoardingPass.getSegments().getBarCodedBoardingPassSegment())) {
+				OperationManagerStub.BarCodedBoardingPassLeg firstLeg = Arrays
+						.asList(barCodedBoardingPassSegment.getLegs().getBarCodedBoardingPassLeg()).get(0);
+				BoardingPass boardingPass = new BoardingPass();
+				Name name = barCodedBoardingPass.getName();
+				boardingPass.setFirstName(name.getFirstName());
+				boardingPass.setLastName(name.getLastName());
+				boardingPass.setArrivalStation(barCodedBoardingPassSegment.getArrivalStation());
+				boardingPass.setDepartureStation(barCodedBoardingPassSegment.getDepartureStation());
+				boardingPass.setGate(barCodedBoardingPassSegment.getDepartureGate());
+				boardingPass.setRecordLocator(barCodedBoardingPass.getRecordLocator());
+				boardingPass.setUnitDesignator(firstLeg.getSeatInfo());
+				boardingPass.setBoardingDateTime(barCodedBoardingPassSegment.getBoardingTime());
+				boardingPass.setDepartureDateTime(barCodedBoardingPassSegment.getDepartureTime());
+				boardingPass.setArrivalDateTime(barCodedBoardingPassSegment.getArrivalTime());
+				if (firstLeg.getSSRs() != null && firstLeg.getSSRs().getManifestLegSSR() != null) {
+					boardingPass.setSsrs(populateSsrs(firstLeg.getSSRs().getManifestLegSSR()));
+				}
+				boardingPass.setSequenceNumber(String.valueOf(firstLeg.getBoardingSequence()));
+				if (barCodedBoardingPassSegment.getInventoryLegKey() != null) {
+					boardingPass.setCarrierCode(barCodedBoardingPassSegment.getInventoryLegKey().getCarrierCode());
+					boardingPass.setFlightNumber(barCodedBoardingPassSegment.getInventoryLegKey().getFlightNumber());
+					boardingPass.setArrivalStationAbbr(
+							barCodedBoardingPassSegment.getInventoryLegKey().getArrivalStation());
+					boardingPass.setDepartureStationAbbr(
+							barCodedBoardingPassSegment.getInventoryLegKey().getDepartureStation());
+				}
+
+				if (barCodedBoardingPassSegment.getBarCodes() != null && !isCORBASupported) {
+					boardingPass.setBarcodedString(
+							barCodedBoardingPassSegment.getBarCodes().getBarCode()[0].getBarCodeData());
+				}
+				if (isCORBASupported) {
+					IATABoardingPassBarcode iataBoardingPassBarcode = new IATABoardingPassBarcode(boardingPass);
+					List<IATABoardingPassBarcode> barcodeList = new ArrayList<>();
+					barcodeList.add(iataBoardingPassBarcode);
+					boardingPass.setBarcodedString(
+							contentDataBuilder.buildContentResponse(barcodeList, Template.BOARDING_PASS_BARCODE_STREAM)
+									.getDatum().get(0));
+				}
+				boardingPasses.add(boardingPass);
+			}
+		}
+		ResponseDto responseDto = new ResponseDto();
+		responseDto.setValidResponse(true);
+		responseDto.setBoardingPassList(boardingPasses);
+		return responseDto;
 	}
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content header="BTP010201?" delimiter="?" endChar="$" methodName="">
+	<field position="01" label="false" methodName="getDisplayOSTag">_DisplayOSTAG</field>
+    <field position="02" label="false" methodName="getTaggedToStation">_taggedToStation</field>
+    <field position="03" label="false" methodName="getSequenceNumber">_sequenceNumber</field>
+    <field position="A1" label="false" methodName="getDisplayTaggedToFlightNumber">_TaggedToFlightNumber</field>
+    <field position="A2" label="false" methodName="getTaggedToStation">_taggedToStationFull</field>
+    <field position="A3" label="false" methodName="getTaggedToStation">_taggedToStation</field>
+    <field position="0A" label="false" methodName="getDepartureStation">_departureStation</field>
+    <field position="08" label="false" methodName="getDepartureDisplayDate">_departureDateTime</field>
+    <field position="B3" label="false" methodName="getRecordLocator">_recordLocator</field>
+    <field position="07" label="false" methodName="getFullName">_fullName</field>
+    <field position="0B" label="false" methodName="">_15</field>
+    <field position="B1" label="false" methodName="getOSTag">_OSTAG</field>
+    <field position="14" label="false" methodName="getDisplayOSTag">_DisplayOSTAG</field>
+    <field position="10" label="false" methodName="getDepartureDisplayDate">_departureDateTime</field>
+    <field position="15" label="false" methodName="getRecordLocator">_recordLocator</field>
+    <field position="AC" label="false" methodName="getOSTag">_OSTAG</field>
+    <field position="18" label="false" methodName="getArrivalStation">_arrivalStation</field>
+    <field position="19" label="false" methodName="getDisplayFlightNumber">_flightNumber</field>
+</content>

@@ -9,6 +9,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView;
+import org.springframework.web.servlet.view.jasperreports.JasperReportsViewResolver;
 
 @EnableWebMvc
 @Configuration
@@ -31,5 +33,17 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 		resolver.setSuffix(".html");
 		return resolver;
 	}
+	
+	@Bean
+    public JasperReportsViewResolver getJasperReportsViewResolver() {
+        JasperReportsViewResolver resolver = new JasperReportsViewResolver();
+        resolver.setPrefix("classpath:/template/");
+        resolver.setSuffix(".jasper");
+        resolver.setReportDataKey("datasource");
+        resolver.setViewNames("report_*");
+        resolver.setViewClass(JasperReportsMultiFormatView.class);
+        resolver.setOrder(0);
+        return resolver;
+    }
 
 }

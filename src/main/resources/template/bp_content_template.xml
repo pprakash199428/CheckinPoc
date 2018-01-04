@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content header="CP?1C01?01V?" delimiter="?" endChar="" methodName="">
+    <field position="02" label="true" methodName="">PASSENGER</field>
+    <field position="03" label="true" methodName="">NAME</field>
+    <field position="04" label="false" methodName="getFullName">_passenger_name</field>
+    <field position="05" label="true" methodName="">FROM</field>
+    <field position="06" label="false"  methodName="getDepartureStation">_from</field>
+    <field position="07" label="true"  methodName="">TO</field>
+    <field position="08" label="false"  methodName="getArrivalStation">_to</field>
+    <field position="09" label="true" methodName="">SEAT NUMBER</field>
+    <field position="10" label="true" methodName="">FLIGHT#</field>
+    <field position="11" label="true" methodName="">BOARDING TIME</field>
+    <field position="12" label="false" methodName="getUnitDesignator">_seatNumber</field>
+    <field position="13" label="false" methodName="getFlightNumber">_flightNumber</field>
+    <field position="14" label="false" methodName="getBoardingDisplayDateTime">_boardingTime</field>
+    <field position="15" label="true" methodName="">DATE</field>
+    <field position="16" label="true" methodName="">CONF#</field>
+    <field position="17" label="false" methodName="getDepartureDisplayDate">_date</field>
+    <field position="18" label="false" methodName="getRecordLocator">_conf</field>
+    <field position="19" label="true" methodName="">DEPART</field>
+    <field position="20" label="true" methodName="">ARRIVE</field>
+    <field position="21" label="false" methodName="getDepartureDisplayDateTime">_depart</field>
+    <field position="22" label="false" methodName="getArrivalDisplayDateTime">_arrive</field>
+    <field position="23" label="true" methodName="">SSR</field>
+    <field position="24" label="true" methodName="">SEQ NUMBER</field>
+    <field position="25" label="false" methodName="getSequenceNumber">_seqNumber</field>
+    <field position="26" label="true" methodName="">GATE</field>
+    <field position="27" label="true" methodName="">FROM/TO</field>
+    <field position="28" label="true" methodName="">SEAT#</field>
+    <field position="29" label="false" methodName="getFromTo">_from/to</field>
+    <field position="30" label="false" methodName="getBarcodedString">_barCodeString</field>
+	<field position="31" label="false" methodName="getSSRs">_ssrs</field>
+    <field position="32" label="false" methodName="getGate">_gateNumber</field>
+	<field position="33" label="true" methodName="">@10</field>
+<field position="34" label="true" methodName="">SG</field>
+       <!-- <field position="10" label="false" methodName="">@12</field>-->
+</content>
