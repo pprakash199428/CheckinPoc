@@ -1,6 +1,6 @@
 package com.spicejet.resources;
 
-import java.rmi.RemoteException;
+import java.rmi.RemoteException; 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,6 @@ import com.spicejet.dto.SeatColumn;
 import com.spicejet.dto.SeatRow;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.service.impl.BookingServiceImpl;
-import com.spicejet.service.impl.BusinessRuleConfiguratorImpl;
 import com.spicejet.service.inter.BusinessRuleConfigurator;
 import com.spicejet.service.inter.IOperationManagerService;
 
