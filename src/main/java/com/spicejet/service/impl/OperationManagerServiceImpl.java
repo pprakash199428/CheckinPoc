@@ -190,7 +190,7 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 			checkInPassengerRequest.setCheckInMultiplePassengersRequest(checkInPassengersRequestData);
 			CheckInPassengersResponse checkInPassengers = operationManagerStub
 					.checkInPassengers(checkInPassengerRequest, cv, signature);
-			return populateBoardingPass(checkInPassengers, pnr, sign,bookingDetailDto);
+			return populateBoardingPass(checkInPassengers, pnr, sign, bookingDetailDto);
 		}
 		ResponseDto responseDtoNext = new ResponseDto();
 		responseDtoNext.setValidResponse(false);

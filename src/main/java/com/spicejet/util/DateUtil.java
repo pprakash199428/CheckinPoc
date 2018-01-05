@@ -30,7 +30,7 @@ public class DateUtil {
     public static String formatDateForBoardingPass(Calendar calendar){
         DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
         dateFormatSymbols.setShortMonths(Constants.CUSTOM_MONTHS);
-        SimpleDateFormat bpDateFormater = new SimpleDateFormat("ddMMMyy");
+        SimpleDateFormat bpDateFormater = new SimpleDateFormat(env.getProperty("bp.date.format"),dateFormatSymbols);
         return bpDateFormater.format(calendar.getTime());
     }
 
@@ -40,7 +40,7 @@ public class DateUtil {
      * @return - Formatted Time in String format.
      */
     public static String formatTimeForBoardingPass(Calendar calendar){
-        SimpleDateFormat bpDateFormater = new SimpleDateFormat("HHmm");
+        SimpleDateFormat bpDateFormater = new SimpleDateFormat(env.getProperty("bp.time.format"));
         return bpDateFormater.format(calendar.getTime());
     }
 }

@@ -16,6 +16,8 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+
+
 public class RestHandler {
 
 	public enum RequestType {

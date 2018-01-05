@@ -32,7 +32,7 @@
 		<commonsodec-version>1.9</commonsodec-version>
 
 		<!-- HttpClient -->
-		<httpclient-version>4.3.6</httpclient-version>
+		<httpclient-version>4.5.3</httpclient-version>
 
 		<axis2.version>1.6.2</axis2.version>
 	</properties>
@@ -71,11 +71,8 @@
 			<artifactId>axis2-xmlbeans</artifactId>
 			<version>${axis2.version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.itext</groupId>
-			<artifactId>i-text</artifactId>
-			<version>2.0.8</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.itext</groupId> <artifactId>i-text</artifactId> 
+			<version>2.0.8</version> </dependency> -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
@@ -149,16 +146,20 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${javax.servlet.version}</version>
+			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>${javax.validation.version}</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
 		<!--Jackson Dependencies -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -259,6 +260,14 @@
 			<version>5.1.30</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+
 		<!-- HTTP CLIENT -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -273,11 +282,6 @@
 			<version>${commonsodec-version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>

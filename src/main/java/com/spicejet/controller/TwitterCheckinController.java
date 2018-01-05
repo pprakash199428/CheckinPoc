@@ -3,6 +3,7 @@ package com.spicejet.controller;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
@@ -13,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itextpdf.text.DocumentException;
-import com.spicejet.dao.PnrStatusDao;
 import com.spicejet.dto.AuthenticationResponseDto;
 import com.spicejet.dto.BookingDetailDto;
 import com.spicejet.dto.ResponseDto;
-import com.spicejet.dto.Status;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.resources.BookingManagerResource;
 import com.spicejet.resources.OperationManagerResource;
@@ -27,7 +26,6 @@ import com.spicejet.service.inter.EmailService;
 import com.spicejet.service.inter.JasperGeneratorService;
 import com.spicejet.service.inter.MessageService;
 import com.spicejet.service.inter.PnrStatusService;
-import com.spicejet.util.Constants;
 
 import net.sf.jasperreports.engine.JRException;
 
@@ -71,6 +69,7 @@ public class TwitterCheckinController {
 			//pnrStatusService.savePnrStatus(pnr);
 			BookingDetailDto bookingDetailDto = null;
 			ResponseDto responseDto = null;
+			List<String> boardingPassList;
 			try {
 				if (authenticationResponseDto == null) {
 					authenticationResponseDto = sessionManagerResources.logon();
@@ -91,13 +90,14 @@ public class TwitterCheckinController {
 
 				if (responseDto != null) {
 					if (responseDto.isValidResponse()) {
-						jasperGeneratorService.replaceAndCreatePdf(responseDto.getBoardingPassList());
+						boardingPassList = jasperGeneratorService.replaceAndCreatePdf(responseDto.getBoardingPassList());
 						//pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS,"Success");
-						//emailService.sendEmail(booking, " ", true, bookingDetailDto);
+						//messageService.sendMessage(booking, " ", true, bookingDetailDto);
+					emailService.sendEmailAttachment(booking, " ", true, bookingDetailDto,boardingPassList);
 						//messageService.sendMessage(booking, " ", true, bookingDetailDto);
 					} else {
 						//pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage());
-						//emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
+						emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
 						//messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
 								//bookingDetailDto);
 					}

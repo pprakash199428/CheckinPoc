@@ -10,5 +10,5 @@ import net.sf.jasperreports.engine.JRException;
 
 public interface JasperGeneratorService {
 		
-	public void replaceAndCreatePdf(List<BoardingPass> boardingPasses)throws JRException, IOException, DocumentException;
+	public List<String> replaceAndCreatePdf(List<BoardingPass> boardingPasses)throws JRException, IOException, DocumentException;
 }
