@@ -44,8 +44,8 @@ public class MessageServiceImpl implements MessageService {
 					+ errorMessage;
 		}
 		String[] to = new String[1];
-		to[0] = booking.getBookingContacts().getBookingContact()[0].getHomePhone();
-
+		//to[0] = booking.getBookingContacts().getBookingContact()[0].getHomePhone();
+		to[0] = "8513866908";
 		restHandler.setRequestType(RestHandler.RequestType.POST);
 		log.info("URL : http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");
 		restHandler.setUrl("http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendMessage");

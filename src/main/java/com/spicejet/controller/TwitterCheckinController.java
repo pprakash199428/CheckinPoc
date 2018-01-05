@@ -82,24 +82,24 @@ public class TwitterCheckinController {
 							bookingDetailDto);
 				} else {
 					//pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, bookingDetailDto.getCheckInNotAllowedReason());
-					//emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-							//bookingDetailDto);
-					//messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-						//	bookingDetailDto);
+					emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+							bookingDetailDto);
+					messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+						bookingDetailDto);
 				}
 
 				if (responseDto != null) {
 					if (responseDto.isValidResponse()) {
 						boardingPassList = jasperGeneratorService.replaceAndCreatePdf(responseDto.getBoardingPassList());
 						//pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS,"Success");
-						//messageService.sendMessage(booking, " ", true, bookingDetailDto);
+						messageService.sendMessage(booking, " ", true, bookingDetailDto);
 					emailService.sendEmailAttachment(booking, " ", true, bookingDetailDto,boardingPassList);
-						//messageService.sendMessage(booking, " ", true, bookingDetailDto);
+						messageService.sendMessage(booking, " ", true, bookingDetailDto);
 					} else {
 						//pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage());
 						emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
-						//messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
-								//bookingDetailDto);
+						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
+								bookingDetailDto);
 					}
 				}
 

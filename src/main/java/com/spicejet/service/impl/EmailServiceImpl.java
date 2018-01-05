@@ -56,8 +56,8 @@ public class EmailServiceImpl implements EmailService {
 		}
 
 		String[] to = new String[1];
-		to[0] = booking.getBookingContacts().getBookingContact()[0].getEmailAddress();
-
+		//to[0] = booking.getBookingContacts().getBookingContact()[0].getEmailAddress();
+		to[0] = "pprakash@xebia.com";
 		restHandler.setRequestType(RestHandler.RequestType.POST);
 		log.info("URL : http://sg-azr-tom01-prod.centralindia.cloudapp.azure.com/netcore-api/sendEmailNoAttachment");
 		restHandler
