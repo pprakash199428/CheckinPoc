@@ -49,7 +49,7 @@ public class CreateAndStampBarcode {
 		Image img = Image.getInstance(template);
 		// Image img = pf.getImage();
 		img.scaleAbsolute(600, 90);
-		img.setAbsolutePosition(400f, 420f);
+		img.setAbsolutePosition(400f, 470f);
 		// img.setRight(Integer.parseInt(PropertyConfigurator.getInstance().getValueOf("barCode.width")));
 
 		return img;

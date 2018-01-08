@@ -466,7 +466,7 @@ public class BookingDetailDtoBuilder {
 
 				index++;
 			}
-
+			break;
 		}
 		log.info(".....................Number of journey : " + journeyDetailList.size());
 		return journeyDetailList;

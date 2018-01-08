@@ -11,6 +11,8 @@ public class BoardingPass {
     String firstName;
 
     String lastName;
+    
+    String title;
 
     String departureStation;
 
@@ -57,8 +59,18 @@ public class BoardingPass {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+    
+    
 
-    public String getDepartureStation() {
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDepartureStation() {
         return departureStation.toUpperCase();
     }
 

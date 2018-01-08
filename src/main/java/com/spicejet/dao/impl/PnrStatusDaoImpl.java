@@ -1,5 +1,7 @@
 package com.spicejet.dao.impl;
 
+import java.util.Date;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -28,7 +30,7 @@ public class PnrStatusDaoImpl implements PnrStatusDao {
 	}
 
 	@Override
-	public Status fetchPnrStatus(String pnr, String statusText) {
+	public Status fetchPnrStatus(String pnr, String statusText, Date createdDate) {
 
 		return (Status) sessionfactory.getCurrentSession()
 				.createQuery(" from Status where createdDate=modifiedDate and status = :statusText and pnr=:pnr")

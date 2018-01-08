@@ -17,6 +17,7 @@ import com.itextpdf.text.DocumentException;
 import com.spicejet.dto.AuthenticationResponseDto;
 import com.spicejet.dto.BookingDetailDto;
 import com.spicejet.dto.ResponseDto;
+import com.spicejet.dto.Status;
 import com.spicejet.kiosk.webservices.bookingManager.BookingManagerStub.Booking;
 import com.spicejet.resources.BookingManagerResource;
 import com.spicejet.resources.OperationManagerResource;
@@ -65,7 +66,7 @@ public class TwitterCheckinController {
 	@RequestMapping(value = "/checkin", method = RequestMethod.GET)
 	String CheckinPax(String pnr) {
 		new Thread(() -> {
-			pnrStatusService.savePnrStatus(pnr);
+			Status status = pnrStatusService.savePnrStatus(pnr);
 			BookingDetailDto bookingDetailDto = null;
 			ResponseDto responseDto = null;
 			List<String> boardingPassList;
@@ -81,7 +82,7 @@ public class TwitterCheckinController {
 							bookingDetailDto);
 				} else {
 					pnrStatusService.updatePnrStatus(pnr, Constants.FAILED,
-							bookingDetailDto.getCheckInNotAllowedReason());
+							bookingDetailDto.getCheckInNotAllowedReason(),status.getCreatedDate());
 					emailService.sendEmail(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
 							bookingDetailDto);
 					messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
@@ -92,12 +93,13 @@ public class TwitterCheckinController {
 					if (responseDto.isValidResponse()) {
 						boardingPassList = jasperGeneratorService
 								.replaceAndCreatePdf(responseDto.getBoardingPassList());
-						pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS, "Success");
 						messageService.sendMessage(booking, " ", true, bookingDetailDto);
 						emailService.sendEmailAttachment(booking, " ", true, bookingDetailDto, boardingPassList);
 						messageService.sendMessage(booking, " ", true, bookingDetailDto);
+						pnrStatusService.updatePnrStatus(pnr, Constants.SUCCESS, "Success", status.getCreatedDate());
+
 					} else {
-						pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage());
+						pnrStatusService.updatePnrStatus(pnr, Constants.FAILED, responseDto.getErrorMessage(),status.getCreatedDate());
 						emailService.sendEmail(booking, responseDto.getErrorMessage(), false, bookingDetailDto);
 						messageService.sendMessage(booking, bookingDetailDto.getCheckInNotAllowedReason(), false,
 								bookingDetailDto);

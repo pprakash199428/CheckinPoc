@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.spicejet.dao.PnrStatusDao;
 import com.spicejet.dto.Status;
@@ -16,37 +15,36 @@ public class PnrStatusServiceImpl implements PnrStatusService {
 
 	@Autowired
 	PnrStatusDao pd;
-	
+
 	@Override
-	public void savePnrStatus(String pnr) {
-		pd.savePnrStatus(TwitC(pnr));
+	public Status savePnrStatus(String pnr) {
+		Status status = new Status();
+		status = TwitC(pnr);
+		pd.savePnrStatus(status);
+		return status;
 	}
-	
-	
+
 	Status TwitC(String pnr) {
 		Status status = new Status();
 		Date currentdate = new Date();
 		status.setPnr(pnr);
 		status.setCreatedDate(currentdate);
-		status.setModifiedDate(currentdate);
 		status.setStatus(Constants.INPROGRESS);
 		status.setUserid("dummy user");
-		pd.savePnrStatus(status);
-		
 		return status;
-		
+
 	}
 
-
 	@Override
-	public void updatePnrStatus(String pnr,String status,String reason) {
-		Status pnrStatus = pd.fetchPnrStatus(pnr,Constants.INPROGRESS);
-		if(pnrStatus!=null){
+	public void updatePnrStatus(String pnr, String status, String reason, Date createdDate) {
+		Status pnrStatus = pd.fetchPnrStatus(pnr, Constants.INPROGRESS, createdDate);
+		if (pnrStatus != null) {
 			pnrStatus.setStatus(status);
 			pnrStatus.setReason(reason);
+			pnrStatus.setModifiedDate(new Date());
 			pd.updatePnrStatus(pnrStatus);
 		}
-		
+
 	}
 
 }

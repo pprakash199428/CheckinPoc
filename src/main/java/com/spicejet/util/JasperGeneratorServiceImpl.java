@@ -96,7 +96,7 @@ public class JasperGeneratorServiceImpl extends AbstractReportingService impleme
 
 	private BoardingPassDataBean extractBeanForBP(BoardingPass graph) {
 		BoardingPassDataBean set = new BoardingPassDataBean();
-		set.setPassengerName(graph.getFirstName() + " " + graph.getLastName());
+		set.setPassengerName(graph.getTitle() + " " + graph.getFirstName() + " " + graph.getLastName());
 		set.setFlight(graph.getCarrierCode() + " " + graph.getFlightNumber() + " " + graph.getDepartureStation() + " "
 				+ "(" + graph.getDepartureStationAbbr() + ") TO " + graph.getArrivalStation() + " " + "("
 				+ graph.getArrivalStationAbbr() + ")");

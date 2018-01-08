@@ -1,6 +1,6 @@
 package com.spicejet.resources;
 
-import java.rmi.RemoteException; 
+import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,8 +75,8 @@ public class BookingManagerResource {
 	 */
 
 	Logger log = Logger.getLogger(BookingManagerResource.class);
-	
-	public BookingDetailDto getBookingDetails(String sign,String pnr,String currentDateTime,Booking booking) {
+
+	public BookingDetailDto getBookingDetails(String sign, String pnr, String currentDateTime, Booking booking) {
 
 		log.info("Signature : " + sign);
 		log.info("PNR : " + pnr);
@@ -106,7 +106,7 @@ public class BookingManagerResource {
 					if (!bookingDetailDto.getJourneyDetails().isEmpty()
 							&& Boolean.valueOf(env.getProperty("app.auto.assign"))) {
 						boolean autoSeatAssign = bookingService.autoSeatAssign(bookingDetailDto, sign, pnr);
-						
+
 						if (autoSeatAssign) {
 
 							booking = bookingService.getBooking(sign, pnr);
@@ -116,26 +116,28 @@ public class BookingManagerResource {
 									.build(bookingDetailDto);
 
 						}
-						
-						boolean isValidSeatAssigned=true;
-						
-						if(autoSeatAssign){
+
+						boolean isValidSeatAssigned = true;
+
+						if (autoSeatAssign) {
 							isValidSeatAssigned = validateAutoAssignedSeat(bookingDetailDto, sign);
 						} else {
 							isValidSeatAssigned = validateAssignedSeat(bookingDetailDto, sign);
 						}
-						
+
 						if (!isValidSeatAssigned) {
 							bookingDetailDto.setCheckInNotAllowedReason(env.getProperty("error.seat.full.message"));
 							bookingDetailDto.setValidBooking(false);
 							bookingDetailDto.setCheckInAllowed(false);
 						} else {
-							if (isRoundTrip(bookingDetailDto)) {
-								if (!isTripOnSameDay(bookingDetailDto)) {
-									updateSameDayJourney(bookingDetailDto.getJourneyDetails());
-									updateSameDayPassengerDetail(bookingDetailDto.getPassengerDetails());
-								}
-							}
+							/*
+							 * if (isRoundTrip(bookingDetailDto)) { if
+							 * (!isTripOnSameDay(bookingDetailDto)) {
+							 * updateSameDayJourney(bookingDetailDto.
+							 * getJourneyDetails());
+							 * updateSameDayPassengerDetail(bookingDetailDto.
+							 * getPassengerDetails()); } }
+							 */
 						}
 
 					}
@@ -239,9 +241,9 @@ public class BookingManagerResource {
 
 	private boolean validateAutoAssignedSeat(BookingDetailDto bookingDetailDto, String sign) throws RemoteException {
 		boolean isValidSeatAssigned = true;
-		boolean flag=true;
+		boolean flag = true;
 		int journeyIndex = 0;
-		
+
 		for (JourneyDetail journeyDetail : bookingDetailDto.getJourneyDetails()) {
 			SeatAvailabilityResponseDto availabilityResponseDto = operationManagerService.fetchSeatDetails(sign,
 					String.valueOf(journeyDetail.getDepartureDateTime().getTime().getTime()),
@@ -251,7 +253,7 @@ public class BookingManagerResource {
 			isValidSeatAssigned = checkAutoAssignedSeat(availabilityResponseDto, bookingDetailDto.getPassengerDetails(),
 					journeyIndex);
 			if (!isValidSeatAssigned) {
-				flag=false;
+				flag = false;
 			}
 			journeyIndex++;
 		}
@@ -260,9 +262,10 @@ public class BookingManagerResource {
 		if (!flag) {
 			operationManagerService.unAssign(sign, bookingDetailDto.getPnr(), bookingDetailDto);
 		}
-		
+
 		return flag;
 	}
+
 	private boolean checkAssignedSeat(SeatAvailabilityResponseDto availabilityResponseDto,
 			List<PassengerDetail> passengerDetails, int journeyIndex) {
 		boolean isValidSeatAssigned = true;
@@ -301,7 +304,7 @@ public class BookingManagerResource {
 		for (PassengerDetail passengerDetail : passengerDetails) {
 			if (passengerDetail.getAssignedSeats().size() <= journeyIndex)
 				continue;
-			
+
 			for (SeatRow seatRow : availabilityResponseDto.getSeatRows()) {
 				for (SeatColumn seatColumn : seatRow.getAvailableSeat()) {
 					if ((seatRow.getGroupNumber() + seatColumn.getSeatName())

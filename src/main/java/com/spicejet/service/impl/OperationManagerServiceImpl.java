@@ -756,6 +756,7 @@ public class OperationManagerServiceImpl implements IOperationManagerService {
 				Name name = barCodedBoardingPass.getName();
 				boardingPass.setFirstName(name.getFirstName());
 				boardingPass.setLastName(name.getLastName());
+				boardingPass.setTitle(name.getTitle());
 				boardingPass.setArrivalStation(barCodedBoardingPassSegment.getArrivalStation());
 				boardingPass.setDepartureStation(barCodedBoardingPassSegment.getDepartureStation());
 				boardingPass.setGate(barCodedBoardingPassSegment.getDepartureGate());
