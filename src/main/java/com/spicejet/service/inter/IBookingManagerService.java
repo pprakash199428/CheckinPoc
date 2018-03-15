@@ -25,4 +25,6 @@ public interface IBookingManagerService {
     public BookingHistory[] bookingHistory(String sign, long bookingId) throws RemoteException;
 
     public void sellSSR(BookingDetailDto bookingDetailDto, String sign, String pnr) throws RemoteException;
+    
+    void sellSSRWEBC(BookingDetailDto bookingDetailDto, String sign, String pnr) throws RemoteException;
 }

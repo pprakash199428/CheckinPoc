@@ -36,6 +36,7 @@ public class Constants {
     public static final String SEQ = "SEQ";
     public static final char HYPEN = '-';
     public static final String RCISSR="RCI";
+    public static final String WEBCSSR = "WEBC";
 
 	public static String[] CUSTOM_MONTHS = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
 			"NOV", "DEC" };

@@ -186,6 +186,57 @@ public class BookingServiceImpl implements IBookingManagerService {
 		bookingCommit(bookingDetailDto, sign, pnr, bookingManagerStub, cv);
 
 	}
+	
+	public void sellSSRWEBC(BookingDetailDto bookingDetailDto, String sign, String pnr) throws RemoteException {
+
+		BookingManagerStub bookingManagerStub = new BookingManagerStub(env.getProperty(Constants.BOOKING_MANAGER));
+		BookingManagerStub.SellRequest sellRequest = new BookingManagerStub.SellRequest();
+		SellRequestData sellRequestData = new SellRequestData();
+		sellRequestData.setSellBy(SellBy.SSR);
+		SellSSR sellSSR = new SellSSR();
+		SSRRequest ssrRequest = new SSRRequest();
+		ArrayOfSegmentSSRRequest segmentSSRRequests = new ArrayOfSegmentSSRRequest();
+		
+		int noOfJouney = bookingDetailDto.getJourneyDetails().size();
+
+		JourneyDetail journeyDetail = bookingDetailDto.getJourneyDetails().get(noOfJouney-1);
+		for (PassengerDetail passengerDetail : bookingDetailDto.getPassengerDetails()) {
+			if (!passengerDetail.getPaxSSRList().contains(Constants.WEBCSSR)) {
+				SegmentSSRRequest segmentSSRRequest = new SegmentSSRRequest();
+				segmentSSRRequest.setArrivalStation(journeyDetail.getArrivalStation());
+				segmentSSRRequest.setSTD(journeyDetail.getDepartureDateTime());
+				segmentSSRRequest.setDepartureStation(journeyDetail.getDepartureStation());
+				FlightDesignator flightDesignator = new FlightDesignator();
+				flightDesignator.setFlightNumber(journeyDetail.getFlightNumber());
+				flightDesignator.setCarrierCode(journeyDetail.getCarrierCode());
+				segmentSSRRequest.setFlightDesignator(flightDesignator);
+				ArrayOfPaxSSR arrayOfPaxSSR = new ArrayOfPaxSSR();
+				PaxSSR paxSSR = new PaxSSR();
+				paxSSR.setState(MessageState.New);
+				paxSSR.setActionStatusCode("NN");
+				paxSSR.setArrivalStation(journeyDetail.getArrivalStation());
+				paxSSR.setDepartureStation(journeyDetail.getDepartureStation());
+				paxSSR.setPassengerNumber(passengerDetail.getPassengerNumber());
+				paxSSR.setSSRCode(Constants.WEBCSSR);
+				arrayOfPaxSSR.addPaxSSR(paxSSR);
+				segmentSSRRequest.setPaxSSRs(arrayOfPaxSSR);
+				segmentSSRRequests.addSegmentSSRRequest(segmentSSRRequest);
+			}
+		}
+
+		ssrRequest.setSegmentSSRRequests(segmentSSRRequests);
+		ssrRequest.setCurrencyCode(bookingDetailDto.getCurrencyCode());
+		sellSSR.setSSRRequest(ssrRequest);
+		sellRequestData.setSellSSR(sellSSR);
+		sellRequest.setSellRequestData(sellRequestData);
+		BookingManagerStub.ContractVersion cv = new BookingManagerStub.ContractVersion();
+		cv.setContractVersion(Constants.CONTRACT_VERSION);
+		BookingManagerStub.Signature signature = new BookingManagerStub.Signature();
+		signature.setSignature(sign);
+		bookingManagerStub.sell(sellRequest, cv, signature);
+		bookingCommit(bookingDetailDto, sign, pnr, bookingManagerStub, cv);
+
+	}
 
 	private void bookingCommit(BookingDetailDto bookingDetailDto, String sign, String pnr,
 			BookingManagerStub bookingManagerStub, BookingManagerStub.ContractVersion cv) throws RemoteException {

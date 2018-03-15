@@ -102,7 +102,7 @@ public class BookingManagerResource {
 				if (bookingDetailDto.isValidBooking()) {
 					bookingDetailDtoBuilder.initBookingStub(booking).buildBasicBookingDetails().buildPassengerDetails()
 							.buildJourneyDetails(currentCalendar).build(bookingDetailDto);
-
+					bookingService.sellSSRWEBC(bookingDetailDto, sign, pnr);
 					if (!bookingDetailDto.getJourneyDetails().isEmpty()
 							&& Boolean.valueOf(env.getProperty("app.auto.assign"))) {
 						boolean autoSeatAssign = bookingService.autoSeatAssign(bookingDetailDto, sign, pnr);
